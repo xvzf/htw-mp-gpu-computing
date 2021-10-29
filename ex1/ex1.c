@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <omp.h>
 
+
 // helper from https://gist.github.com/dgoguerra/7194777
 static const char *bytes_to_string(uint64_t bytes) {
 	char *suffix[] = {"B", "KB", "MB", "GB", "TB"};
@@ -37,7 +38,8 @@ float* init_vector(uint64_t n) {
     }
     #pragma omp for
     for(uint64_t i = 0; i < n; i++) {
-        m[i] = (float)rand()/(float)(RAND_MAX);
+        // Generate random values from 0-1000
+        m[i] = (float)rand()/(float)(RAND_MAX) * 1000.0;
     }
     return m;
 }
@@ -79,6 +81,28 @@ float* mmult_openmp(uint64_t n, float* a, float* b, float *c) {
     return c;
 }
 
+// openmp accelerated Multiplication of nxn matrix A with vector b, non deterministic runtime
+float* mmult_openmp_non_deterministic(uint64_t n, float* a, float* b, float *c) {
+
+    // Perform matrix multiplications
+    // num_threads(4) -> Limit number of threads so MacOS tagets the high performance cores of the M1 processor
+    #pragma omp parallel for num_threads(4) schedule(dynamic, 1)
+    for(uint64_t i = 0; i < n; i++) {
+        float sum = 0.0;
+        for(uint64_t j = 0; j < n; j++) {
+            float val = a[i*n + j] * b[j];
+            sum += val;
+            // count based on multiplication value
+            int cntr = 0;
+            int limit = (int)val;
+            while(cntr < limit) cntr++;
+        }
+        c[i] = sum;
+    }
+
+    return c;
+}
+
 
 int main(int argc, char *argv[]) {
     uint64_t n;
@@ -103,7 +127,7 @@ int main(int argc, char *argv[]) {
         printf("[!] Memory allocation failed, exiting\n");
         return EXIT_FAILURE;
     }
-    printf("[!] Memory allocation successful\n");
+    printf("[+] Memory allocation successful\n");
 
 
     // Do computation (normal)
@@ -120,8 +144,15 @@ int main(int argc, char *argv[]) {
     begin = omp_get_wtime(); // Start time
     c = mmult_openmp(n, a, b, c); // Calculation
     end = omp_get_wtime(); // Stop time
+    printf("[+] openmp execution time: %0.2f ms\n", (end-begin)*1000);
 
-    printf("[+] openmp accelerated execution time: %0.2f ms\n", (end-begin)*1000);
+    // Do computation (openmp) nondeterministic
+    printf("[+] Starting openmp nondeterministic execution\n");
+    begin = omp_get_wtime(); // Start time
+    c = mmult_openmp_non_deterministic(n, a, b, c); // Calculation
+    end = omp_get_wtime(); // Stop time
+
+    printf("[+] openmp nondeterministic execution time: %0.2f ms\n", (end-begin)*1000);
 
     // Cleanup memory
     free(a);
