@@ -1,3 +1,5 @@
+> Matthias Riegler <mriegler@htwsaar.de>
+
 # Exercise 1
 > Note: I ran the experiments on an Apple M1 processor therefore I limited the number of threads to 4 in order to only schedule the workload on the performance cores
 
