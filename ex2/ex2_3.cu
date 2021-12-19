@@ -64,7 +64,6 @@ __global__ void compact(int *a, int *list_x, int *list_y)
         {
             // Check if idx == 16 -> if so, increase counter
             if (a[i * COLS + idx] == 16)
-                ;
             {
                 counter++;
             }
@@ -84,14 +83,14 @@ __global__ void compact(int *a, int *list_x, int *list_y)
     __syncthreads();
     if (idx < COLS)
     {
-        int res = num[idx];
+        int calcIdx = num[idx];
         for (int i = 0; i < ROWS; i++)
         {
             if (a[i * COLS + idx] == 16)
             {
-                list_x[i * COLS + idx] = i;
-                list_y[res] = idx;
-                res++;
+                list_x[calcIdx] = i;
+                list_y[calcIdx] = idx;
+                calcIdx++;
             }
         }
     }
