@@ -3,7 +3,7 @@
 #include <cuda.h>
 
 #define ROWS 16 // N
-#define COLS 10 // N
+#define COLS 10 // M
 
 // Couldn't get it to work, replaced with a something random
 /*

@@ -81,10 +81,11 @@ int main(void)
 
 # 1b
 
-Wenn `x<M/2: p(y,x) = 2*(x*N+y)`
-Wenn `x>=M/2: p(y,x) = 2*((x-M/2)*N+y)+1`
+- Wenn `x<M/2: p(y,x) = 2*(x*N+y)`
+- Wenn `x>=M/2: p(y,x) = 2*((x-M/2)*N+y)+1`
 
 Einfach x und y (und M und N) vertauschen -> zeilenweise wird dann zu spaltenweise
+
 -> geht nur bei gerader Anzahl Spalten
 
 
@@ -175,7 +176,7 @@ int main(){
 
 ```c
 #define ROWS 16 // N
-#define COLS 10 // N
+#define COLS 10 // M
 
 __global__ void compact(int *a, int *list_x, int *list_y)
 {
@@ -185,17 +186,14 @@ __global__ void compact(int *a, int *list_x, int *list_y)
 
     // Count for every row how many entries with 16 exist
     // store in num array (shared state)
-    if (idx < COLS)
+    if (idx < COLS)  // executed by COLS threads
     {
         int counter = 0;
         // Each thread iterates through all rows at given position
         for (int i = 0; i < ROWS; i++)
         {
             // Check if idx == 16 -> if so, increase counter
-            if (a[i * COLS + idx] == 16)
-            {
-                counter++;
-            }
+            counter += a[i] == 16;
         }
         // Store final count in shared array
         num[idx] = counter;
@@ -208,9 +206,9 @@ __global__ void compact(int *a, int *list_x, int *list_y)
         prefix_sum(num, COLS);
     }
 
-    // another barrier and store in global liste_x and liste_y
+    // another barrier and store in global list_x and list_y
     __syncthreads();
-    if (idx < COLS)
+    if (idx < COLS)  // executed by COLS threads
     {
         int calcIdx = num[idx];
         for (int i = 0; i < ROWS; i++)
