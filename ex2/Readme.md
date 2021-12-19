@@ -31,7 +31,7 @@ void random_floats(float *a, int array_size)
 }
 
 // add is the default vector add
-__global__ void add(float *a, float *b, float *c, int n)
+__global__ void add(float *a, float *b, float *c)
 {
 
     int idx = blockIdx.x + threadIdx.x * gridDim.x;
@@ -63,7 +63,7 @@ int main(void)
     cudaMemcpy(d_a, a, size, cudaMemcpyHostToDevice);
     cudaMemcpy(d_b, b, size, cudaMemcpyHostToDevice);
     // Launch add() kernel on GPU
-    add<<<N / THREADS_PER_BLOCK, THREADS_PER_BLOCK>>>(d_a, d_b, d_c, N);
+    add<<<N / THREADS_PER_BLOCK, THREADS_PER_BLOCK>>>(d_a, d_b, d_c);
     // Copy result back to host
     cudaMemcpy(c, d_c, size, cudaMemcpyDeviceToHost);
     printf("%f\n", c[N - 1]);
