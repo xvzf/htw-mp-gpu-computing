@@ -24,4 +24,5 @@ clean:
 	rm *.out
 
 pdf:
-	pandoc Readme.md --pdf-engine=xelatex -o Readme.pdf
+	pandoc Readme.md --pdf-engine=/Library/TeX/texbin/pdflatex -o Readme.pdf
+# pandoc -o my.pdf --pdf-engine=/Library/TeX/texbin/pdflatex

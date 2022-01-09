@@ -31,7 +31,10 @@ __global__ void sum(value_T* array, value_T* results){
 int main() {
     int threads_per_block = 32 * pow(5, K);
     /* ... */
-    sum<<<(RESULT_COUNT + threads_per_block - 1)/threads_per_block, threads_per_block>>>(device_array, device_results);
+    sum<<<
+        (RESULT_COUNT + threads_per_block - 1)/threads_per_block,
+        threads_per_block
+    >>>(device_array, device_results);
     /*...*/
 }
 
@@ -43,20 +46,21 @@ Für die Messungen wurde eine GTX 970 verwendet.
 
 ### Version A
 
-Die Messwerte der 5 Testläufe #1 bis #5 mit dem gegebenen k und dem Durchschnitt.
+Die Messwerte der 5 Testläufe `#1` bis `#5` mit dem gegebenen k und dem Durchschnitt.
 
-| k   | avg    | #1   | #2   | #3   | #4   | #5   |
+| k   | avg    | `#1`   | `#2`   | `#3`  | `#4`   | `#5`   |
 |-----|--------|------|------|------|------|------|
 | 0   | 38.6ms | 39ms | 38ms | 40ms | 37ms | 39ms |
 | 1   | 53.6ms | 54ms | 54ms | 54ms | 52ms | 54ms |
 | 2   | 49.4ms | 48ms | 48ms | 51ms | 49ms | 51ms |
 
 k >= 3 stürzt ab. 32 * 5 ^ 3 = 4000. Zu viele Threads.
+
 ### Version B
 
 Die Messwerte der 5 Testläufe #1 bis #5 mit dem gegebenen k und dem Durchschnitt. 
 
-| k   | avg | #1  | #2  | #3  | #4  | #5   |
+| k   | avg    | `#1`   | `#2`   | `#3`  | `#4`   | `#5`   |
 |-----|-----|-----|-----|-----|-----|------|
 | 0   | 2ms | 2ms | 2ms | 2ms | 2ms | 2ms  |
 | 1   | 2ms | 2ms | 2ms | 2ms | 2ms | 2ms  |
@@ -214,6 +218,32 @@ Die grundsätzliche Idee ist dieselbe, wie in Aufgabe 2:
 Immer eine Zeile oben und eine Zeile unten im selben Thread berechnen, sodass alle Threads die gleiche Arbeit haben.
 
 Einziger Unterschied ist, dass wir im Vergleich zu Aufgabe 2 ein eindimensionales Array statt einem zweidimensionalen verwendet haben.
+
+Cuda kernel:
+```cpp
+__global__ void mult(value_T *matrix, value_T *vector, value_T *results){
+    int idx = blockDim.x * blockIdx.x + threadIdx.x;
+    value_T sum = 0;
+    if(idx < N / 2){
+        for (int i = idx; i < N; ++i) {
+            sum += matrix[N * idx + i] * vector[i];
+        }
+        results[idx] = sum;
+        sum = 0;
+        for (int i = N - 1 - idx; i < N; ++i) {
+            sum += matrix[N * (N - idx - 1) + i] * vector[i];
+        }
+        results[N - idx - 1] = sum;
+        return;
+    }else if(idx == N / 2){
+        for (int x = N - 1; x >= N / 2; --x) {
+            sum += matrix[N * idx + x] * vector[x];
+        }
+        results[idx] = sum;
+        return;
+    }
+}
+```
 
 ## Messdaten
 
