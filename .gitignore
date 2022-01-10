@@ -1,2 +1,5 @@
 ex1/build/
 *.out
+*.o
+project/sobel_c/sobel
+*.vscode/
