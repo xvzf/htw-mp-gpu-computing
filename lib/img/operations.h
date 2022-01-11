@@ -1,8 +1,8 @@
-#ifndef __SOBEL_IMG_H__
-#define __SOBEL_IMG_H__
+#ifndef __IMG_OPERATIONS_H__
+#define __IMG_OPERATIONS_H__
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdint.h>
 
 // ppm_image stores an image as a matrix in form of X rows and Y columns.
 typedef struct

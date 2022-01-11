@@ -1,5 +1,5 @@
-#ifndef __SOBEL_MAT_HELPER_H__
-#define __SOBEL_MAT_HELPER_H__
+#ifndef __MATRIX_HELPER_H__
+#define __MATRIX_HELPER_H__
 
 #include <stdint.h>
 
