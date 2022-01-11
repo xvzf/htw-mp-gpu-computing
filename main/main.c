@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdarg.h>
-#include "img.h"
-#include "mat_helper.h"
+#include "lib/img/operations.h"
+#include "lib/matrix/helper.h"
 
 // main entrypoint
 int main(int argc, char **argv)
@@ -15,6 +16,7 @@ int main(int argc, char **argv)
     if (argc != 3)
     {
         fprintf(stderr, "[!] invalid args\n\n\t usage: %s <in> <out>\n", argv[0]);
+        return -1;
     }
     in_path = argv[1];
     out_path = argv[2];

@@ -1,4 +1,7 @@
-#include "img.h"
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include "operations.h"
 
 // load_image loads an image in PPM format.
 ppm_image *load_image(const char *filename)
@@ -37,7 +40,7 @@ ppm_image *load_image(const char *filename)
     }
 
     //read image size information
-    if (fscanf(fp, "%ld %ld", &img->size_x, &img->size_y) != 2)
+    if (fscanf(fp, "%llu %llu", &img->size_x, &img->size_y) != 2)
     {
         fprintf(stderr, "[!] couldn't extract image size for '%s'\n", filename);
         return NULL;
@@ -52,7 +55,7 @@ ppm_image *load_image(const char *filename)
     }
     if (max_pix_value > 255)
     {
-        fprintf(stderr, "[!] invalid color range (expected 8bit)", filename);
+        fprintf(stderr, "[!] invalid color range in '%s' (expected 8bit)", filename);
         return NULL;
     }
 
@@ -97,7 +100,7 @@ int save_image(const char *filename, ppm_image *img)
     // write header
     fprintf(fp, "P6\n");
     //write size
-    fprintf(fp, "%ld %ld\n", img->size_x, img->size_y);
+    fprintf(fp, "%llu %llu\n", img->size_x, img->size_y);
     // color depth
     fprintf(fp, "255\n");
     // Write data
@@ -128,7 +131,7 @@ ppm_image *color_to_gray(ppm_image *in)
     {
         for (uint64_t y = 0; y < in->size_y; y++)
         {
-            out->data[y * out->size_x + x] = in->data[y * in->size_x * in->depth + x*3];
+            out->data[y * out->size_x + x] = in->data[y * in->size_x * in->depth + x * 3];
         }
     }
     return out;
