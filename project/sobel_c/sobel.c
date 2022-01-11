@@ -22,7 +22,9 @@ int main(int argc, char **argv)
     // Load image
     in_img = load_image(in_path);
 
-    save_image(out_path, in_img);
+    ppm_image* test = color_to_gray(in_img);
+
+    save_image(out_path, gray_to_color(test));
 
     return 0;
 }
