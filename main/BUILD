@@ -4,5 +4,6 @@ cc_binary(
     deps = [
         "//lib/img:img",
         "//lib/matrix:matrix",
+        "//lib/sobel:sobel",
     ],
 )

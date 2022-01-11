@@ -3,8 +3,27 @@
 #include <stdlib.h>
 #include "operations.h"
 
+ppm_image *new_image(uintmax_t size_x, uintmax_t size_y, uint8_t depth)
+{
+    ppm_image *out;
+
+    if ((depth != 1) && (depth != 3))
+    {
+        return NULL;
+    }
+
+    // Allocate
+    out = (ppm_image *)malloc(sizeof(ppm_image));
+    out->data = (uint8_t *)malloc(size_x * size_y * depth);
+    out->size_x = size_x;
+    out->size_y = size_y;
+    out->depth = depth;
+
+    return out;
+}
+
 // load_image loads an image in PPM format.
-ppm_image *load_image(const char *filename)
+ppm_image *load_image(const char *filename, int depth)
 {
     ppm_image *img;
     FILE *fp;
@@ -25,14 +44,14 @@ ppm_image *load_image(const char *filename)
         return NULL;
     }
     // check header
-    if (buf[0] != 'P' || buf[1] != '6')
+    if (buf[0] != 'P' || (buf[1] != '6' && buf[1] != '5'))
     {
         fprintf(stderr, "[!] Header mismatch in file '%s', expected P6 (Bitmap)", filename);
         return NULL;
     }
 
     img = (ppm_image *)malloc(sizeof(ppm_image));
-    img->depth = 3;
+    img->depth = buf[1] == '5' ? 1: 3; // P5 -> Grayscale P6 -> RGB
     if (!img)
     {
         fprintf(stderr, "[!] Failed to alloc memory");
@@ -60,7 +79,7 @@ ppm_image *load_image(const char *filename)
     }
 
     // Mem alloc for data
-    img->data = (uint8_t *)malloc(sizeof(uint8_t) * 3 * img->size_x * img->size_y);
+    img->data = (uint8_t *)malloc(sizeof(uint8_t) * img->depth * img->size_x * img->size_y);
     if (!img->data)
     {
         fprintf(stderr, "[!] Failed to alloc memory");
@@ -68,13 +87,22 @@ ppm_image *load_image(const char *filename)
     }
 
     //read pixel data from file, assume we're having a grayscale image -> only read one pixel value
-    if (fread(img->data, 3 * img->size_x, img->size_y, fp) != img->size_y)
+    if (fread(img->data, img->depth * img->size_x, img->size_y, fp) != img->size_y)
     {
         fprintf(stderr, "'%s' couldn't be loaded", filename);
         return NULL;
     }
 
     fclose(fp);
+
+    // Convert to grayscale if not already present
+    if (depth == 1 && img->depth == 3) {
+        ppm_image *img_grey = color_to_gray(img);
+        free(img->data);
+        free(img);
+        return img_grey;
+    }
+
     return img;
 }
 
@@ -83,11 +111,6 @@ ppm_image *load_image(const char *filename)
 int save_image(const char *filename, ppm_image *img)
 {
     FILE *fp;
-
-    if (img->depth != 3)
-    {
-        return -1;
-    }
 
     //open PPM file for reading
     fp = fopen(filename, "wb");
@@ -98,13 +121,17 @@ int save_image(const char *filename, ppm_image *img)
     }
 
     // write header
-    fprintf(fp, "P6\n");
+    if (img->depth == 3)
+        fprintf(fp, "P6\n");
+    else
+        fprintf(fp, "P5\n");
+
     //write size
     fprintf(fp, "%ju %ju\n", img->size_x, img->size_y);
     // color depth
     fprintf(fp, "255\n");
     // Write data
-    fwrite(img->data, 3 * img->size_x, img->size_y, fp);
+    fwrite(img->data, img->depth * img->size_x, img->size_y, fp);
 
     fclose(fp);
     return 0;
