@@ -2,6 +2,9 @@
 build:
 	bazel build -s //...
 
+build-debug:
+	bazel build --config=asan //...
+
 .PHONY: clean
 clean:
 	bazel clean --expunge
