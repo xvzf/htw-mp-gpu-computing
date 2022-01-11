@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "img.h"
+#include "mat_helper.h"
 
 // main entrypoint
 int main(int argc, char **argv)
@@ -20,6 +21,8 @@ int main(int argc, char **argv)
 
     // Load image
     in_img = load_image(in_path);
+
+    save_image(out_path, in_img);
 
     return 0;
 }

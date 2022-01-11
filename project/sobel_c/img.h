@@ -18,4 +18,7 @@ typedef struct
 // load_image loads an image in PPM format
 ppm_image *load_image(const char *filename);
 
+// save_image stores an image in the PPM P6 format
+int save_image(const char *filename, ppm_image *img);
+
 #endif
