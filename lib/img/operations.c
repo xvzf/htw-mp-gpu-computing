@@ -40,7 +40,7 @@ ppm_image *load_image(const char *filename)
     }
 
     //read image size information
-    if (fscanf(fp, "%llu %llu", &img->size_x, &img->size_y) != 2)
+    if (fscanf(fp, "%ju %ju", &img->size_x, &img->size_y) != 2)
     {
         fprintf(stderr, "[!] couldn't extract image size for '%s'\n", filename);
         return NULL;
@@ -100,7 +100,7 @@ int save_image(const char *filename, ppm_image *img)
     // write header
     fprintf(fp, "P6\n");
     //write size
-    fprintf(fp, "%llu %llu\n", img->size_x, img->size_y);
+    fprintf(fp, "%ju %ju\n", img->size_x, img->size_y);
     // color depth
     fprintf(fp, "255\n");
     // Write data
@@ -127,9 +127,9 @@ ppm_image *color_to_gray(ppm_image *in)
     out->size_y = in->size_y;
     out->depth = 1;
 
-    for (uint64_t x = 0; x < in->size_x; x++)
+    for (uintmax_t x = 0; x < in->size_x; x++)
     {
-        for (uint64_t y = 0; y < in->size_y; y++)
+        for (uintmax_t y = 0; y < in->size_y; y++)
         {
             out->data[y * out->size_x + x] = in->data[y * in->size_x * in->depth + x * 3];
         }
@@ -154,9 +154,9 @@ ppm_image *gray_to_color(ppm_image *in)
     out->size_y = in->size_y;
     out->depth = 3;
 
-    for (uint64_t x = 0; x < in->size_x; x++)
+    for (uintmax_t x = 0; x < in->size_x; x++)
     {
-        for (uint64_t y = 0; y < in->size_y; y++)
+        for (uintmax_t y = 0; y < in->size_y; y++)
         {
             for (uint8_t d = 0; d < out->depth; d++)
             {
