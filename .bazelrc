@@ -1,1 +1,13 @@
 repo_env=BAZEL_USE_CPP_ONLY_TOOLCHAIN=1
+
+# OpenMP Support
+copt="-fopenmp"
+
+# debug support
+build:debug --strip=never
+build:debug --copt -fsanitize=address
+build:debug --copt -DADDRESS_SANITIZER
+build:debug --copt -O1
+build:debug --copt -g
+build:debug --copt -fno-omit-frame-pointer
+build:debug --linkopt -fsanitize=address
