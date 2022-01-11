@@ -8,8 +8,8 @@
 typedef struct
 {
     // Image metadata
-    uint64_t size_x;
-    uint64_t size_y;
+    uintmax_t size_x;
+    uintmax_t size_y;
 
     // pixel depth
     uint8_t depth; // 1 -> Grayscale; 2 -> Color

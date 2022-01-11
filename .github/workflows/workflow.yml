@@ -14,7 +14,7 @@ jobs:
       run: |
         wget https://apt.llvm.org/llvm.sh
         chmod +x llvm.sh
-        yes "" | sudo ./llvm.sh 13
+        sudo ./llvm.sh 13
 
 
     - name: Mount bazel cache
@@ -30,12 +30,12 @@ jobs:
         mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
         chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
 
-    - name: Test
-      env:
-        CC: clang-13
-        CXX: clang++-13
-      run: |
-        "${GITHUB_WORKSPACE}/bin/bazel" test //...
+    # - name: Test
+    #   env:
+    #     CC: clang-13
+    #     CXX: clang++-13
+    #   run: |
+    #     "${GITHUB_WORKSPACE}/bin/bazel" test //...
 
     - name: Build
       env:
