@@ -73,3 +73,30 @@ ppm_image *load_image(const char *filename)
     fclose(fp);
     return img;
 }
+
+// save_image stores an image in the PPM P6 format
+// FIXME error handling!
+int save_image(const char *filename, ppm_image *img)
+{
+    FILE *fp;
+
+    //open PPM file for reading
+    fp = fopen(filename, "wb");
+    if (!fp)
+    {
+        fprintf(stderr, "[!] Unable to open file '%s'\n", filename);
+        return -1;
+    }
+
+    // write header
+    fprintf(fp, "P6\n");
+    //write size
+    fprintf(fp, "%ld %ld\n", img->size_x, img->size_y);
+    // color depth
+    fprintf(fp, "255\n");
+    // Write data
+    fwrite(img->data, 3 * img->size_x, img->size_y, fp);
+
+    fclose(fp);
+    return 0;
+}
