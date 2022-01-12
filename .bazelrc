@@ -1,5 +1,10 @@
+build --repo_env=BAZEL_USE_CPP_ONLY_TOOLCHAIN=1
+build --repo_env=CC=clang-13
+build --repo_env=CXX=clang++-13
+
 # OpenMP Support
-copt="-fopenmp"
+build --copt -fopenmp
+build --linkopt -fopenmp
 
 # debug support
 build:debug --strip=never
