@@ -2,8 +2,8 @@ cc_binary(
     name = "sobelc",
     srcs = ["main.c"],
     deps = [
-        "//lib/img:img",
-        "//lib/matrix:matrix",
-        "//lib/sobel:sobel",
+        "//lib/img",
+        "//lib/matrix",
+        "//lib/sobel",
     ],
 )
