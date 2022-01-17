@@ -2,6 +2,9 @@
 build:
 	bazel build //...
 
+build-cuda:
+	bazel build --config=cuda //...
+
 build-debug:
 	bazel build --config=debug //...
 

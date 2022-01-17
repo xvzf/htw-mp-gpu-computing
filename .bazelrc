@@ -6,6 +6,11 @@ build --repo_env=CXX=clang++-13
 build --copt -fopenmp
 build --linkopt -fopenmp
 
+# CUDA Support
+build:cuda --repo_env=CUDA_PATH=/usr/local/cuda/
+build:cuda --@rules_cuda//cuda:enable_cuda
+build:cuda --@rules_cuda//cuda:compiler=clang
+
 # debug support
 build:debug --strip=never
 build:debug --copt -fsanitize=address
@@ -14,3 +19,4 @@ build:debug --copt -O1
 build:debug --copt -g
 build:debug --copt -fno-omit-frame-pointer
 build:debug --linkopt -fsanitize=address
+
