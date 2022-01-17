@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v1
 
@@ -15,7 +15,7 @@ jobs:
         wget https://apt.llvm.org/llvm.sh
         chmod +x llvm.sh
         sudo ./llvm.sh 13
-        sudo apt install -y libomp-dev
+        sudo apt install -y libomp-13-dev
 
 
     - name: Mount bazel cache
