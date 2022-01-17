@@ -1,5 +1,7 @@
 # htw-mp-gpu-computing project
 
+![example workflow](https://github.com/xvzf/htw-mp-gpu-computing/actions/workflows/workflow.yml/badge.svg)
+
 
 ## Tooling
 [Bazel](https://bazel.build) is required, checkout `.github/workflows/workflow.yml` as reference for installing.
