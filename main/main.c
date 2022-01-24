@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 
     // Perform sobel operator
     ret = sobel(in_img, out_img);
-    if(ret) {
+    if(ret == EXIT_SUCCESS) {
         // Save image
         ret += save_image(out_path, out_img);
     } else {
