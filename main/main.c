@@ -11,6 +11,8 @@
 // main entrypoint
 int main(int argc, char **argv)
 {
+    int ret = 0;
+
     // Input output
     char *in_path, *out_path;
 
@@ -28,10 +30,13 @@ int main(int argc, char **argv)
     ppm_image *out_img = new_image(in_img->size_x - 2, in_img->size_y - 2, 1);
 
     // Perform sobel operator
-    sobel(in_img, out_img);
-
-    // Run sobel operator
-    int ret = save_image(out_path, out_img);
+    ret = sobel(in_img, out_img);
+    if(ret) {
+        // Save image
+        ret += save_image(out_path, out_img);
+    } else {
+        fprintf(stderr, "[!] Sobel operator failed to run!");
+    }
 
     // Free up resources
     free(in_img->data);

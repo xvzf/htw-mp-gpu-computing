@@ -12,7 +12,7 @@ cc_binary(
     srcs = ["main.c"],
     deps = [
         "//lib/img",
-        "//lib/sobel:seq",
+        "//lib/sobel:omp",
     ],
 )
 
