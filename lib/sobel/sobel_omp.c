@@ -5,7 +5,7 @@
 #include "sobel.h"
 
 // Sequential sobel implementation
-int sobel_omp(ppm_image *in_img, ppm_image *out_img)
+int sobel(ppm_image *in_img, ppm_image *out_img)
 {
 // FIXME add input validation
 #pragma omp parallel for
