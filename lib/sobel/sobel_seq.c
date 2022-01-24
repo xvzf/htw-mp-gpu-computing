@@ -4,7 +4,7 @@
 #include "sobel.h"
 
 // Sequential sobel implementation
-int sobel_seq(ppm_image *in_img, ppm_image *out_img)
+int sobel(ppm_image *in_img, ppm_image *out_img)
 {
     // FIXME add input validation
     for (uintmax_t x = 0; x < in_img->size_x - 2; x++)

@@ -5,7 +5,6 @@
 #include <math.h>
 #include "lib/img/types.h"
 #include "lib/img/operations.h"
-#include "lib/matrix/helper.h"
 #include "lib/sobel/sobel.h"
 
 
@@ -29,7 +28,7 @@ int main(int argc, char **argv)
     ppm_image *out_img = new_image(in_img->size_x - 2, in_img->size_y - 2, 1);
 
     // Perform sobel operator
-    sobel_omp(in_img, out_img);
+    sobel(in_img, out_img);
 
     // Run sobel operator
     int ret = save_image(out_path, out_img);
