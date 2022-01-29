@@ -12,9 +12,9 @@ static inline int gpuAssert(cudaError_t code, const char *file, int line, bool a
         fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
         if (abort)
             exit(code);
-        return EXIT_SUCCESS;
+        return EXIT_FAILURE;
     }
-    return EXIT_FAILURE;
+    return EXIT_SUCCESS;
 }
 
 #endif
