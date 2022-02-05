@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdint.h>
 #include <omp.h>
 
@@ -12,7 +11,6 @@ int sobel(ppm_image *in_img, ppm_image *out_img)
 {
     const uintmax_t chunk_size = ((in_img->size_x - 2) / OMP_SPLIT_CHUNKS);
     const uintmax_t chunk_loss = (in_img->size_x - 2) % OMP_SPLIT_CHUNKS;
-    printf("Chunk size: %ld, Chunk loss: %ld\n", chunk_size, chunk_loss);
 
 // FIXME add input validation
 #pragma omp parallel for schedule(dynamic, 1)
@@ -22,8 +20,6 @@ int sobel(ppm_image *in_img, ppm_image *out_img)
 
         uintmax_t x = chunk_size * (uintmax_t)i + (i == 0 ? 0 : chunk_loss);
         uintmax_t x_to = chunk_size * ((uintmax_t)i + 1) + chunk_loss;
-
-        printf("%ld -> %ld\n", x, x_to);
 
         // Actual computation
         for (; x < x_to; x++)
