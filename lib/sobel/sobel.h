@@ -71,22 +71,20 @@ __device__
     // Apply sobel operator
     double g_x =
         // First row
-        (double)data[y * size_x + x] * sobel_g_x_mat[0 + 0] + (double)data[(y + 1) * size_x + x + 1] * sobel_g_x_mat[0 + 1] + (double)data[(y + 2) * size_x + x + 2] * sobel_g_x_mat[0 + 2]
+        (double)data[y * size_x + x] - (double)data[(y + 2) * size_x + x + 2]
         // Second row
-        + (double)data[y * size_x + x] * sobel_g_x_mat[3 + 0] + (double)data[(y + 1) * size_x + x + 1] * sobel_g_x_mat[3 + 1] + (double)data[(y + 2) * size_x + x + 2] * sobel_g_x_mat[3 + 2]
+        + (double)data[y * size_x + x] * 2 - (double)data[(y + 2) * size_x + x + 2] * 2
         // Third row
-        + (double)data[y * size_x + x] * sobel_g_x_mat[6 + 0] + (double)data[(y + 1) * size_x + x + 1] * sobel_g_x_mat[6 + 1] + (double)data[(y + 2) * size_x + x + 2] * sobel_g_x_mat[6 + 2];
+        + (double)data[y * size_x + x] - (double)data[(y + 2) * size_x + x + 2];
 
     double g_y =
         // First row
-        (double)data[y * size_x + x] * sobel_g_y_mat[0 + 0] + (double)data[(y + 1) * size_x + x + 1] * sobel_g_y_mat[0 + 1] + (double)data[(y + 2) * size_x + x + 2] * sobel_g_y_mat[0 + 2]
-        // Second row
-        + (double)data[y * size_x + x] * sobel_g_y_mat[3 + 0] + (double)data[(y + 1) * size_x + x + 1] * sobel_g_y_mat[3 + 1] + (double)data[(y + 2) * size_x + x + 2] * sobel_g_y_mat[3 + 2]
+        (double)data[y * size_x + x] + (double)data[(y + 1) * size_x + x + 1] * 2 + (double)data[(y + 2) * size_x + x + 2]
         // Third row
-        + (double)data[y * size_x + x] * sobel_g_y_mat[6 + 0] + (double)data[(y + 1) * size_x + x + 1] * sobel_g_y_mat[6 + 1] + (double)data[(y + 2) * size_x + x + 2] * sobel_g_y_mat[6 + 2];
+        -((double)data[y * size_x + x] + (double)data[(y + 1) * size_x + x + 1] * 2 + (double)data[(y + 2) * size_x + x + 2]);
 
     // Map double -> 0..255
-    return map_result(sqrt(pow(g_x, 2.0f) + pow(g_y, 2.0f)));
+    return map_result(sqrt(g_x * g_x + g_y * g_y));
 }
 
 // sobel_compined_op wraps the sobel_combined_op_data for direct ppm_image input
