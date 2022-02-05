@@ -3,10 +3,10 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include <math.h>
+#include <omp.h>
 #include "lib/img/types.h"
 #include "lib/img/operations.h"
 #include "lib/sobel/sobel.h"
-
 
 // main entrypoint
 int main(int argc, char **argv)
@@ -30,11 +30,16 @@ int main(int argc, char **argv)
     ppm_image *out_img = new_image(in_img->size_x - 2, in_img->size_y - 2, 1);
 
     // Perform sobel operator
+    double start_time = omp_get_wtime();
     ret = sobel(in_img, out_img);
-    if(ret == EXIT_SUCCESS) {
+    if (ret == EXIT_SUCCESS)
+    {
+        printf("Compute took %lfms\n", (omp_get_wtime() - start_time) * 1000);
         // Save image
         ret += save_image(out_path, out_img);
-    } else {
+    }
+    else
+    {
         fprintf(stderr, "[!] Sobel operator failed to run!");
     }
 
