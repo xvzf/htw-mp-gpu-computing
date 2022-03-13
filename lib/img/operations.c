@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include <stdlib.h>
 #include "operations.h"
 
-ppm_image *new_image(uintmax_t size_x, uintmax_t size_y, uint8_t depth)
+ppm_image *new_image(const char *filename, uintmax_t size_x, uintmax_t size_y, uint8_t depth)
 {
     ppm_image *out;
 
@@ -14,6 +15,15 @@ ppm_image *new_image(uintmax_t size_x, uintmax_t size_y, uint8_t depth)
 
     // Allocate
     out = (ppm_image *)malloc(sizeof(ppm_image));
+
+    out->filename = malloc(sizeof(char) * (strlen(filename) + 1));
+    memcpy(out->filename, filename, sizeof(char) * (strlen(filename) + 1));
+    out->fp = fopen(filename, "rb+");
+    if (!out->fp)
+    {
+        fprintf(stderr, "[!] Unable to open file '%s'\n", filename);
+        return NULL;
+    }
     out->data = (uint8_t *)malloc(size_x * size_y * depth);
     out->size_x = size_x;
     out->size_y = size_y;
@@ -58,23 +68,32 @@ ppm_image *load_image(const char *filename, int depth)
         return NULL;
     }
 
-    //read image size information
-    if (fscanf(fp, "%ju %ju", &img->size_x, &img->size_y) != 2)
+    img->filename = malloc(sizeof(char) * (strlen(filename) + 1));
+    memcpy(img->filename, filename, sizeof(char) * (strlen(filename) + 1));
+    img->fp = fp;
+    if (!img->fp)
     {
-        fprintf(stderr, "[!] couldn't extract image size for '%s'\n", filename);
+        fprintf(stderr, "[!] Unable to open file '%s'\n", img->filename);
+        return NULL;
+    }
+
+    //read image size information
+    if (fscanf(img->fp, "%ju %ju", &img->size_x, &img->size_y) != 2)
+    {
+        fprintf(stderr, "[!] couldn't extract image size for '%s'\n", img->filename);
         return NULL;
     }
 
     //check if image is grayscale (only option supported)
     int max_pix_value;
-    if (fscanf(fp, "%d", &max_pix_value) != 1)
+    if (fscanf(img->fp, "%d", &max_pix_value) != 1)
     {
-        fprintf(stderr, "[!] Couldn't extract max_pix_value for %s", filename);
+        fprintf(stderr, "[!] Couldn't extract max_pix_value for %s", img->filename);
         return NULL;
     }
     if (max_pix_value > 255)
     {
-        fprintf(stderr, "[!] invalid color range in '%s' (expected 8bit)", filename);
+        fprintf(stderr, "[!] invalid color range in '%s' (expected 8bit)", img->filename);
         return NULL;
     }
 
@@ -87,9 +106,9 @@ ppm_image *load_image(const char *filename, int depth)
     }
 
     //read pixel data from file, assume we're having a grayscale image -> only read one pixel value
-    if (fread(img->data, img->depth * img->size_x, img->size_y, fp) != img->size_y)
+    if (fread(img->data, img->depth * img->size_x, img->size_y, img->fp) != img->size_y)
     {
-        fprintf(stderr, "'%s' couldn't be loaded", filename);
+        fprintf(stderr, "'%s' couldn't be loaded", img->filename);
         return NULL;
     }
 
@@ -108,32 +127,24 @@ ppm_image *load_image(const char *filename, int depth)
 
 // save_image stores an image in the PPM P6 format
 // FIXME error handling!
-int save_image(const char *filename, ppm_image *img)
+int save_image(ppm_image *img)
 {
-    FILE *fp;
-
-    //open PPM file for reading
-    fp = fopen(filename, "wb");
-    if (!fp)
-    {
-        fprintf(stderr, "[!] Unable to open file '%s'\n", filename);
-        return -1;
-    }
 
     // write header
     if (img->depth == 3)
-        fprintf(fp, "P6\n");
+        fprintf(img->fp, "P6\n");
     else
-        fprintf(fp, "P5\n");
+        fprintf(img->fp, "P5\n");
 
     //write size
-    fprintf(fp, "%ju %ju\n", img->size_x, img->size_y);
+    fprintf(img->fp, "%ju %ju\n", img->size_x, img->size_y);
     // color depth
-    fprintf(fp, "255\n");
+    fprintf(img->fp, "255\n");
     // Write data
-    fwrite(img->data, img->depth * img->size_x, img->size_y, fp);
+    fwrite(img->data, img->depth * img->size_x, img->size_y, img->fp);
 
-    fclose(fp);
+    fclose(img->fp);
+    img->fp = fopen(img->filename, "rb+");
     return 0;
 }
 
@@ -150,6 +161,16 @@ ppm_image *color_to_gray(ppm_image *in)
     // Allocate
     out = (ppm_image *)malloc(sizeof(ppm_image));
     out->data = (uint8_t *)malloc(in->size_x * in->size_y);
+
+    out->filename = malloc(sizeof(char) * (strlen(in->filename) + 1));
+    memcpy(out->filename, in->filename, sizeof(char) * (strlen(in->filename) + 1));
+    out->fp = fopen(out->filename, "wb");
+    if (!out->fp)
+    {
+        fprintf(stderr, "[!] Unable to open file '%s'\n", out->filename);
+        return NULL;
+    }
+
     out->size_x = in->size_x;
     out->size_y = in->size_y;
     out->depth = 1;
@@ -177,6 +198,16 @@ ppm_image *gray_to_color(ppm_image *in)
     // Allocate
     out = (ppm_image *)malloc(sizeof(ppm_image));
     out->data = (uint8_t *)malloc(3 * in->size_x * in->size_y);
+
+    out->filename = malloc(sizeof(char) * (strlen(in->filename) + 1));
+    memcpy(out->filename, in->filename, sizeof(char) * (strlen(in->filename) + 1));
+    out->fp = fopen(out->filename, "wb");
+    if (!out->fp)
+    {
+        fprintf(stderr, "[!] Unable to open file '%s'\n", out->filename);
+        return NULL;
+    }
+
     out->size_x = in->size_x;
     out->size_y = in->size_y;
     out->depth = 3;
