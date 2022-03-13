@@ -27,7 +27,24 @@ int main(int argc, char **argv)
 
     // Load image
     ppm_image *in_img = load_image(in_path, 1);
+
+    if(in_img == NULL)
+    {
+        fprintf(stderr, "[!] In-Image could not be loaded!");
+        return -1;
+    }
+
     ppm_image *out_img = new_image(out_path, in_img->size_x - 2, in_img->size_y - 2, 1);
+
+    if(out_img == NULL)
+    {
+        fprintf(stderr, "[!] Out-Image could not be created!");
+        free(in_img->data);
+        fclose(in_img->fp);
+        free(in_img->filename);
+        free(in_img);
+        return -1;
+    }
 
     // Perform sobel operator
     double start_time = omp_get_wtime();
