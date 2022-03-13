@@ -68,24 +68,25 @@ __device__
     static inline uint8_t
     sobel_combined_op_data(uint8_t *data, uintmax_t x, uintmax_t y, uintmax_t size_x, uintmax_t size_y)
 {
-    double tmp_first = data[y * size_x + x];
-    double tmp_second = data[(y + 2) * size_x + x + 2];
+
+    uintmax_t tmp_top_row = y * size_x;
+    uintmax_t tmp_middle_row = (y + 1) * size_x;
+    uintmax_t tmp_bottom_row = (y + 2) * size_x;
+
+    double top_left = data[tmp_top_row + x];
+    //double top = data[tmp_top_row + (x + 1)];
+    double top_right = data[tmp_top_row + (x + 2)];
+    //double left = data[tmp_middle_row + x];
+    //double right = data[tmp_middle_row + (x + 2)];
+    double bottom_left = data[tmp_bottom_row + x];
+    //double bottom = data[tmp_bottom_row + (x + 1)];
+    double bottom_right = data[tmp_bottom_row + (x + 2)];
 
 
     // Apply sobel operator
-    double g_x =
-        // First row
-        tmp_first - tmp_second
-        // Second row
-        + tmp_first * 2 - tmp_second * 2
-        // Third row
-        + tmp_first - tmp_second;
+    double g_x = top_left + 2 * data[tmp_middle_row + x] + bottom_left - (top_right + 2 * data[tmp_middle_row + (x + 2)] + bottom_right);
 
-    double g_y =
-        // First row
-        tmp_first + tmp_second * 2 + tmp_second
-        // Third row
-        -((double)tmp_first + tmp_second * 2 + tmp_second);
+    double g_y = top_left + 2 * data[tmp_top_row + (x + 1)] + top_right - (bottom_left + 2 * data[tmp_bottom_row + (x + 1)] + bottom_right);
 
     // Map double -> 0..255
     return map_result(sqrt(g_x * g_x + g_y * g_y));
