@@ -8,7 +8,7 @@
 #include "lib/img/types.h"
 #include "lib/img/operations.h"
 
-#define THREADS_PER_BLOCK (512)
+#define THREADS_PER_BLOCK (256)
 
 __global__ void sobelKernel(uint8_t *in, uint8_t *out, uintmax_t in_size_x, uintmax_t in_size_y, uintmax_t out_size_x, uintmax_t out_size_y)
 {
@@ -17,20 +17,26 @@ __global__ void sobelKernel(uint8_t *in, uint8_t *out, uintmax_t in_size_x, uint
     {
         uintmax_t y = idx / out_size_x;
         uintmax_t x = idx % out_size_x;
-        out[y * out_size_x + x] = sobel_combined_op_data(in, x, y, in_size_x, in_size_y);
+        out[y * out_size_x + x] = sobel_combined_op_data2(in, x, y, in_size_x, in_size_y);
     }
 }
+
 
 int sobel(ppm_image *in_img, ppm_image *out_img)
 {
     int err = 0;
 
-    uint8_t *device_in, *device_out;
+    uint8_t *device_in, *device_out, *device_maps;
     err += gpuErrchk(cudaMalloc((void **)&device_in, in_img->size_x * in_img->size_y * sizeof(uint8_t)));
     err += gpuErrchk(cudaMalloc((void **)&device_out, out_img->size_x * out_img->size_y * sizeof(uint8_t)));
+    err += gpuErrchk(cudaMalloc((void **)&device_maps, MAP_SIZE * sizeof(uint8_t)));
     err += gpuErrchk(cudaMemcpy(device_in, in_img->data, sizeof(uint8_t) * in_img->size_x * in_img->size_y, cudaMemcpyHostToDevice));
     uintmax_t N = out_img->size_x * out_img->size_y;
-
+    uint8_t host_maps [MAP_SIZE];
+    for(int i = 0; i < MAP_SIZE;++i){
+        host_maps[i] = sqrt(i);
+    }
+    err+= gpuErrchk(cudaMemcpyToSymbol(constant_maps, &host_maps, MAP_SIZE*sizeof(uint8_t)));
     // Run kernel
     sobelKernel<<<(N + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK>>>(device_in, device_out, in_img->size_x, in_img->size_y, out_img->size_x, out_img->size_y);
 
