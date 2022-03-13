@@ -18,7 +18,7 @@ ppm_image *new_image(const char *filename, uintmax_t size_x, uintmax_t size_y, u
 
     out->filename = malloc(sizeof(char) * (strlen(filename) + 1));
     memcpy(out->filename, filename, sizeof(char) * (strlen(filename) + 1));
-    out->fp = fopen(filename, "rb+");
+    out->fp = fopen(filename, "wb+");
     if (!out->fp)
     {
         fprintf(stderr, "[!] Unable to open file '%s'\n", filename);
@@ -40,7 +40,7 @@ ppm_image *load_image(const char *filename, int depth)
     char buf[3];
 
     //open PPM file for reading
-    fp = fopen(filename, "rb");
+    fp = fopen(filename, "rb+");
     if (!fp)
     {
         fprintf(stderr, "[!] Unable to open file '%s'\n", filename);
