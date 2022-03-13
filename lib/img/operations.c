@@ -164,7 +164,7 @@ ppm_image *color_to_gray(ppm_image *in)
 
     out->filename = malloc(sizeof(char) * (strlen(in->filename) + 1));
     memcpy(out->filename, in->filename, sizeof(char) * (strlen(in->filename) + 1));
-    out->fp = fopen(out->filename, "wb");
+    out->fp = fopen(out->filename, "rb+");
     if (!out->fp)
     {
         fprintf(stderr, "[!] Unable to open file '%s'\n", out->filename);
@@ -201,7 +201,7 @@ ppm_image *gray_to_color(ppm_image *in)
 
     out->filename = malloc(sizeof(char) * (strlen(in->filename) + 1));
     memcpy(out->filename, in->filename, sizeof(char) * (strlen(in->filename) + 1));
-    out->fp = fopen(out->filename, "wb");
+    out->fp = fopen(out->filename, "rb+");
     if (!out->fp)
     {
         fprintf(stderr, "[!] Unable to open file '%s'\n", out->filename);
