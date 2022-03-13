@@ -17,6 +17,12 @@ ppm_image *color_to_gray(ppm_image *in);
 // greay_to_color explodes a single dimension to RGB
 ppm_image *gray_to_color(ppm_image *in);
 
+
+uint8_t* read_pixel_line(ppm_image *img);
+
+// takes a color pixel line of size depth * size_x and converts it to grayscale pixel line
+uint8_t* color_to_gray_line(uint8_t *pixel_line, uint8_t depth, uint8_t size_x);
+
 // new_image creates a new (empty) image with the given parameters
 ppm_image *new_image(const char *filename, uintmax_t size_x, uintmax_t size_y, uint8_t depth);
 
