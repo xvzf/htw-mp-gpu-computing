@@ -140,7 +140,7 @@ uint8_t* color_to_gray_line(uint8_t *pixel_line, uint8_t depth, uint8_t size_x)
     }
 
     for (uintmax_t x = 0; x < size_x; x++)
-        pixel_gray[x] = pixel_line[depth + x * 3];
+        pixel_gray[x] = pixel_line[x * 3];
 
     return pixel_gray;
 }
