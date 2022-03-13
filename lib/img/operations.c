@@ -106,19 +106,6 @@ ppm_image *load_image(const char *filename, int depth)
         return NULL;
     }
 
-    uint8_t *pixel_line;
-    for(intmax_t i = 0; i < img->size_y; i++)
-    {
-        pixel_line = read_pixel_line(img);
-        if(pixel_line == NULL)
-        {
-            fprintf(stderr, "'%s' couldn't be loaded", img->filename);
-            return NULL;
-        }
-        memcpy(img->data + i * img->size_x, pixel_line, img->size_x);
-        free(pixel_line);
-    }
-
     return img;
 }
 
@@ -127,7 +114,7 @@ uint8_t* read_pixel_line(ppm_image *img)
     uint8_t *pixel_line = malloc(img->depth * img->size_x);
     uint8_t *gray_line;
 
-    if (fread(img->data, img->depth * img->size_x, 1, img->fp) != 1)
+    if (fread(pixel_line, img->depth * img->size_x, 1, img->fp) != 1)
     {
         fprintf(stderr, "'%s' couldn't be loaded", img->filename);
         free(pixel_line);

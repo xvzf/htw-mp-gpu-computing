@@ -10,7 +10,7 @@ extern "C"
 {
 #endif
     // sobel runs the sobel operator.
-    int sobel(ppm_image *in_img, ppm_image *out_img);
+    int sobel(ppm_image *in_img, ppm_image *out_img, intmax_t offset);
 #ifdef __cplusplus
 }
 #endif

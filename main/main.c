@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdarg.h>
+#include <string.h>
 #include <math.h>
 #include <omp.h>
 #include "lib/img/types.h"
@@ -46,19 +47,50 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    // Perform sobel operator
-    double start_time = omp_get_wtime();
-    ret = sobel(in_img, out_img);
-    if (ret == EXIT_SUCCESS)
+    uint8_t *pixel_line;
+    // load first three lines 
+    for(intmax_t i = 0; i < 3; i++)
     {
-        printf("Compute took %lfms\n", (omp_get_wtime() - start_time) * 1000);
-        // Save image
-        ret += save_image(out_img);
+        pixel_line = read_pixel_line(in_img);
+        if(pixel_line == NULL)
+        {
+            fprintf(stderr, "'%s' couldn't be loaded", in_img->filename);
+            return -1;
+        }
+        memcpy(in_img->data + i * in_img->size_x, pixel_line, in_img->size_x);
+        free(pixel_line);
     }
-    else
+
+    // Perform sobel operator on first line
+    double start_time = omp_get_wtime();
+    ret = sobel(in_img, out_img, 0);
+    if (ret != EXIT_SUCCESS)
     {
         fprintf(stderr, "[!] Sobel operator failed to run!");
     }
+
+    for(intmax_t i = 0; i < in_img->size_y - 3; i++)
+    {
+        pixel_line = read_pixel_line(in_img);
+        if(pixel_line == NULL)
+        {
+            fprintf(stderr, "'%s' couldn't be loaded", in_img->filename);
+            return -1;
+        }
+        memcpy(in_img->data + i * in_img->size_x, pixel_line, in_img->size_x);
+        free(pixel_line);
+        
+        // Perform sobel operator
+        ret = sobel(in_img, out_img, i + 1);
+        if (ret != EXIT_SUCCESS)
+        {
+            fprintf(stderr, "[!] Sobel operator failed to run!");
+        }
+    }
+
+    printf("Compute took %lfms\n", (omp_get_wtime() - start_time) * 1000);
+    // Save image
+    ret += save_image(out_img);
 
     // Free up resources
     free(in_img->data);

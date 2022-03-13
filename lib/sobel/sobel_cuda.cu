@@ -21,22 +21,22 @@ __global__ void sobelKernel(uint8_t *in, uint8_t *out, uintmax_t in_size_x, uint
     }
 }
 
-int sobel(ppm_image *in_img, ppm_image *out_img)
+int sobel(ppm_image *in_img, ppm_image *out_img, intmax_t offset)
 {
     int err = 0;
 
     uint8_t *device_in, *device_out;
     err += gpuErrchk(cudaMalloc((void **)&device_in, in_img->size_x * in_img->size_y * sizeof(uint8_t)));
     err += gpuErrchk(cudaMalloc((void **)&device_out, out_img->size_x * out_img->size_y * sizeof(uint8_t)));
-    err += gpuErrchk(cudaMemcpy(device_in, in_img->data, sizeof(uint8_t) * in_img->size_x * in_img->size_y, cudaMemcpyHostToDevice));
-    uintmax_t N = out_img->size_x * out_img->size_y;
+    err += gpuErrchk(cudaMemcpy(device_in, in_img->data + offset * in_img->size_x, sizeof(uint8_t) * in_img->size_x, cudaMemcpyHostToDevice));
+    uintmax_t N = out_img->size_x;
 
     // Run kernel
     sobelKernel<<<(N + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK, THREADS_PER_BLOCK>>>(device_in, device_out, in_img->size_x, in_img->size_y, out_img->size_x, out_img->size_y);
 
     err += gpuErrchk(cudaPeekAtLastError());
     err += gpuErrchk(cudaDeviceSynchronize());
-    err += gpuErrchk(cudaMemcpy(out_img->data, device_out, sizeof(uint8_t) * out_img->size_y * out_img->size_x, cudaMemcpyDeviceToHost));
+    err += gpuErrchk(cudaMemcpy(out_img->data + offset * in_img->size_x, device_out, sizeof(uint8_t) * out_img->size_x, cudaMemcpyDeviceToHost));
 
     // Free up internal resources
     cudaFree(device_in);
