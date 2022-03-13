@@ -77,7 +77,7 @@ int main(int argc, char **argv)
             fprintf(stderr, "'%s' couldn't be loaded", in_img->filename);
             return -1;
         }
-        memcpy(in_img->data + i * in_img->size_x, pixel_line, in_img->size_x);
+        memcpy(in_img->data + (i+3) * in_img->size_x, pixel_line, in_img->size_x);
         free(pixel_line);
         
         // Perform sobel operator
