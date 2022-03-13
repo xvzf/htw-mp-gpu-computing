@@ -11,13 +11,7 @@ ppm_image *load_image(const char *filename, int depth);
 // save_image stores an image in the PPM P6 format
 int save_image(ppm_image *img);
 
-// color_to_gray reduces the RGB color range to a single dimension.
-ppm_image *color_to_gray(ppm_image *in);
-
-// greay_to_color explodes a single dimension to RGB
-ppm_image *gray_to_color(ppm_image *in);
-
-
+// reads a line of color pixels from image, converts them to grayscale and returns grayscale line with size size_x
 uint8_t* read_pixel_line(ppm_image *img);
 
 // takes a color pixel line of size depth * size_x and converts it to grayscale pixel line

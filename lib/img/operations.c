@@ -71,6 +71,7 @@ ppm_image *load_image(const char *filename, int depth)
     img->filename = malloc(sizeof(char) * (strlen(filename) + 1));
     memcpy(img->filename, filename, sizeof(char) * (strlen(filename) + 1));
     img->fp = fp;
+
     if (!img->fp)
     {
         fprintf(stderr, "[!] Unable to open file '%s'\n", img->filename);
@@ -117,23 +118,6 @@ ppm_image *load_image(const char *filename, int depth)
         memcpy(img->data + i * img->size_x, pixel_line, img->size_x);
         free(pixel_line);
     }
-
-    //read pixel data from file, assume we're having a grayscale image -> only read one pixel value
-/*    if (fread(img->data, img->depth * img->size_x, img->size_y, img->fp) != img->size_y)
-    {
-        fprintf(stderr, "'%s' couldn't be loaded", img->filename);
-        return NULL;
-    }*/
-
-    fclose(fp);
-
-    // Convert to grayscale if not already present
-/*    if (depth == 1 && img->depth == 3) {
-        ppm_image *img_grey = color_to_gray(img);
-        free(img->data);
-        free(img);
-        return img_grey;
-    }*/
 
     return img;
 }
@@ -195,82 +179,4 @@ int save_image(ppm_image *img)
     fclose(img->fp);
     img->fp = fopen(img->filename, "rb+");
     return 0;
-}
-
-// color_to_gray reduces the RGB color range to a single dimension.
-ppm_image *color_to_gray(ppm_image *in)
-{
-    ppm_image *out;
-
-    if (in->depth != 3)
-    {
-        return NULL;
-    }
-
-    // Allocate
-    out = (ppm_image *)malloc(sizeof(ppm_image));
-    out->data = (uint8_t *)malloc(in->size_x * in->size_y);
-
-    out->filename = malloc(sizeof(char) * (strlen(in->filename) + 1));
-    memcpy(out->filename, in->filename, sizeof(char) * (strlen(in->filename) + 1));
-    out->fp = fopen(out->filename, "rb+");
-    if (!out->fp)
-    {
-        fprintf(stderr, "[!] Unable to open file '%s'\n", out->filename);
-        return NULL;
-    }
-
-    out->size_x = in->size_x;
-    out->size_y = in->size_y;
-    out->depth = 1;
-
-    for (uintmax_t x = 0; x < in->size_x; x++)
-    {
-        for (uintmax_t y = 0; y < in->size_y; y++)
-        {
-            out->data[y * out->size_x + x] = in->data[y * in->size_x * in->depth + x * 3];
-        }
-    }
-    return out;
-}
-
-// greay_to_color explodes a single dimension to RGB
-ppm_image *gray_to_color(ppm_image *in)
-{
-    ppm_image *out;
-
-    if (in->depth != 1)
-    {
-        return NULL;
-    }
-
-    // Allocate
-    out = (ppm_image *)malloc(sizeof(ppm_image));
-    out->data = (uint8_t *)malloc(3 * in->size_x * in->size_y);
-
-    out->filename = malloc(sizeof(char) * (strlen(in->filename) + 1));
-    memcpy(out->filename, in->filename, sizeof(char) * (strlen(in->filename) + 1));
-    out->fp = fopen(out->filename, "rb+");
-    if (!out->fp)
-    {
-        fprintf(stderr, "[!] Unable to open file '%s'\n", out->filename);
-        return NULL;
-    }
-
-    out->size_x = in->size_x;
-    out->size_y = in->size_y;
-    out->depth = 3;
-
-    for (uintmax_t x = 0; x < in->size_x; x++)
-    {
-        for (uintmax_t y = 0; y < in->size_y; y++)
-        {
-            for (uint8_t d = 0; d < out->depth; d++)
-            {
-                out->data[y * out->size_x * out->depth + x + d] = in->data[y * in->size_x * in->depth + x];
-            }
-        }
-    }
-
-    return out;
 }
