@@ -68,20 +68,24 @@ __device__
     static inline uint8_t
     sobel_combined_op_data(uint8_t *data, uintmax_t x, uintmax_t y, uintmax_t size_x, uintmax_t size_y)
 {
+    double tmp_first = data[y * size_x + x];
+    double tmp_second = data[(y + 2) * size_x + x + 2];
+
+
     // Apply sobel operator
     double g_x =
         // First row
-        (double)data[y * size_x + x] - (double)data[(y + 2) * size_x + x + 2]
+        tmp_first - tmp_second
         // Second row
-        + (double)data[y * size_x + x] * 2 - (double)data[(y + 2) * size_x + x + 2] * 2
+        + tmp_first * 2 - tmp_second * 2
         // Third row
-        + (double)data[y * size_x + x] - (double)data[(y + 2) * size_x + x + 2];
+        + tmp_first - tmp_second;
 
     double g_y =
         // First row
-        (double)data[y * size_x + x] + (double)data[(y + 1) * size_x + x + 1] * 2 + (double)data[(y + 2) * size_x + x + 2]
+        tmp_first + tmp_second * 2 + tmp_second
         // Third row
-        -((double)data[y * size_x + x] + (double)data[(y + 1) * size_x + x + 1] * 2 + (double)data[(y + 2) * size_x + x + 2]);
+        -((double)tmp_first + tmp_second * 2 + tmp_second);
 
     // Map double -> 0..255
     return map_result(sqrt(g_x * g_x + g_y * g_y));
