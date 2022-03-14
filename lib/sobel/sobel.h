@@ -79,12 +79,8 @@ __device__
     uintmax_t tmp_bottom_row = (y + 2) * size_x;
 
     calc_t top_left = data[tmp_top_row + x];
-    //calc_t top = data[tmp_top_row + (x + 1)];
     calc_t top_right = data[tmp_top_row + (x + 2)];
-    //calc_t left = data[tmp_middle_row + x];
-    //calc_t right = data[tmp_middle_row + (x + 2)];
     calc_t bottom_left = data[tmp_bottom_row + x];
-    //calc_t bottom = data[tmp_bottom_row + (x + 1)];
     calc_t bottom_right = data[tmp_bottom_row + (x + 2)];
 
 
