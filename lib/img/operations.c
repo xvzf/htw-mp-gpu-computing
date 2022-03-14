@@ -99,7 +99,8 @@ ppm_image *load_image(const char *filename, int depth)
     }
 
     // Mem alloc for data
-    img->data = (uint8_t *)malloc(sizeof(uint8_t) * img->depth * img->size_x * img->size_y);
+    // img->data = (uint8_t *)malloc(sizeof(uint8_t) * img->depth * img->size_x * img->size_y);
+    img->data = (uint8_t *)malloc(sizeof(uint8_t) * img->size_x * img->size_y); // FIXME hardocde img->depth
     if (!img->data)
     {
         fprintf(stderr, "[!] Failed to alloc memory");
