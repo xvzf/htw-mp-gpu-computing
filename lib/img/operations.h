@@ -12,10 +12,44 @@ ppm_image *load_image(const char *filename, int depth);
 int save_image(ppm_image *img);
 
 // reads a line of color pixels from image, converts them to grayscale and returns grayscale line with size size_x
-uint8_t* read_pixel_line(ppm_image *img);
+//uint8_t* read_pixel_line(ppm_image *img);
+static uint8_t* color_to_gray_line(uint8_t *pixel_line, uint8_t depth, uintmax_t size_x)
+{
+    uint8_t *pixel_gray;
+
+    pixel_gray = (uint8_t*)malloc(size_x);
+
+    if (depth != 3)
+    {
+        free(pixel_gray);
+        return NULL;
+    }
+
+    for (uintmax_t x = 0; x < size_x; x++)
+        pixel_gray[x] = pixel_line[x * 3];
+
+    return pixel_gray;
+}
+static uint8_t* read_pixel_line(ppm_image *img)
+{
+    uint8_t *pixel_line =(uint8_t*) malloc(img->depth * img->size_x);
+    uint8_t *gray_line;
+
+    if (fread(pixel_line, img->depth * img->size_x, 1, img->fp) != 1)
+    {
+        fprintf(stderr, "'%s' couldn't be loaded", img->filename);
+        free(pixel_line);
+        return NULL;
+    }
+
+    gray_line = color_to_gray_line(pixel_line, img->depth, img->size_x);
+    free(pixel_line);
+    return gray_line;
+}
+
 
 // takes a color pixel line of size depth * size_x and converts it to grayscale pixel line
-uint8_t* color_to_gray_line(uint8_t *pixel_line, uint8_t depth, uintmax_t size_x);
+//uint8_t* color_to_gray_line(uint8_t *pixel_line, uint8_t depth, uintmax_t size_x);
 
 // new_image creates a new (empty) image with the given parameters
 ppm_image *new_image(const char *filename, uintmax_t size_x, uintmax_t size_y, uint8_t depth);

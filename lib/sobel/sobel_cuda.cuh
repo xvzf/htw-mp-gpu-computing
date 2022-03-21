@@ -9,7 +9,7 @@ static inline int gpuAssert(cudaError_t code, const char *file, int line, bool a
 {
     if (code != cudaSuccess)
     {
-        fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+        fprintf(stderr, "GPUassert: %u %s %s %d\n", (uint)code, cudaGetErrorString(code), file, line);
         if (abort)
             exit(code);
         return EXIT_FAILURE;

@@ -8,7 +8,10 @@
 #define MAP_SIZE (256*256)
 #ifdef __CUDACC__
 __constant__ uint8_t constant_maps[MAP_SIZE];
+
 #endif
+
+static uint8_t *device_out;
 extern uint8_t constant_maps_host[MAP_SIZE];
 
 static void init_host_maps(){
@@ -30,7 +33,17 @@ extern "C"
 {
 #endif
     // sobel runs the sobel operator.
-    int sobel(ppm_image *in_img, ppm_image *out_img, intmax_t offset);
+    uint8_t *sobel(ppm_image *in_img, ppm_image *out_img, intmax_t offset, uint8_t **return_device_out);
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+// sobel runs the sobel operator.
+int write_to_out_img(ppm_image *out_img, intmax_t offset, uint8_t *_device_out);
 #ifdef __cplusplus
 }
 #endif

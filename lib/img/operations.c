@@ -110,40 +110,8 @@ ppm_image *load_image(const char *filename, int depth)
     return img;
 }
 
-uint8_t* read_pixel_line(ppm_image *img)
-{
-    uint8_t *pixel_line = malloc(img->depth * img->size_x);
-    uint8_t *gray_line;
 
-    if (fread(pixel_line, img->depth * img->size_x, 1, img->fp) != 1)
-    {
-        fprintf(stderr, "'%s' couldn't be loaded", img->filename);
-        free(pixel_line);
-        return NULL;
-    }
 
-    gray_line = color_to_gray_line(pixel_line, img->depth, img->size_x);
-    free(pixel_line);
-    return gray_line;
-}
-
-uint8_t* color_to_gray_line(uint8_t *pixel_line, uint8_t depth, uintmax_t size_x)
-{
-    uint8_t *pixel_gray;
-
-    pixel_gray = malloc(size_x);
-
-    if (depth != 3)
-    {
-        free(pixel_gray);
-        return NULL;
-    }
-
-    for (uintmax_t x = 0; x < size_x; x++)
-        pixel_gray[x] = pixel_line[x * 3];
-
-    return pixel_gray;
-}
 
 // save_image stores an image in the PPM P6 format
 // FIXME error handling!

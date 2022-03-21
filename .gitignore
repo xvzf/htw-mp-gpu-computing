@@ -16,3 +16,4 @@ project/sobel_c/sobel
 user.bazelrc
 
 /testdata/img_1.ppm
+/testdata/img_3.ppm
