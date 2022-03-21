@@ -37,7 +37,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "[!] In-Image could not be loaded!");
         return -1;
     }
-    printf("Image size: %u %u (%u pixels) data pointer: %p depth: %u\n", in_img->size_x, in_img->size_y, in_img->size_x * in_img->size_y, in_img->data, in_img->depth);
+    printf("Image size: %lu %lu (%lu pixels) data pointer: %p depth: %u\n", in_img->size_x, in_img->size_y, in_img->size_x * in_img->size_y, in_img->data, in_img->depth);
     ppm_image *out_img = new_image(out_path, in_img->size_x - 2, in_img->size_y - 2, 1);
 
     if(out_img == NULL)
@@ -70,7 +70,7 @@ int main(int argc, char **argv)
     *device_out_ptr = NULL;
     // Perform sobel operator on first line
     double start_time = omp_get_wtime();
-    uint8_t _device_out = sobel(in_img, out_img, 0, device_out_ptr);
+    uint8_t *_device_out = sobel(in_img, out_img, 0, device_out_ptr);
    // ret =
     if (ret != EXIT_SUCCESS)
     {
