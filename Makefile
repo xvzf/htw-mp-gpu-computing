@@ -8,6 +8,9 @@ build-cuda:
 build-debug:
 	bazel build --config=debug //...
 
+build-cuda-debug:
+	bazel build --config=cuda-debug //...
+
 .PHONY: clean
 clean:
 	bazel clean --expunge

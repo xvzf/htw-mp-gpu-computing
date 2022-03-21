@@ -2,6 +2,7 @@ build --repo_env=BAZEL_USE_CPP_ONLY_TOOLCHAIN=1
 build --repo_env=CC=clang-13
 build --repo_env=CXX=clang++-13
 
+build --copt -O1
 # OpenMP Support
 build --copt -fopenmp
 build --linkopt -fopenmp
@@ -21,3 +22,17 @@ build:debug --copt -g
 build:debug --copt -fno-omit-frame-pointer
 build:debug --linkopt -fsanitize=address
 
+# CUDA Support
+build:cuda-debug --repo_env=CUDA_PATH=/usr/local/cuda/
+build:cuda-debug --@rules_cuda//cuda:enable_cuda
+build:cuda-debug --@rules_cuda//cuda:compiler=clang
+build:cuda-debug --copt --cuda-gpu-arch=sm_52
+
+# debug support
+build:cuda-debug --strip=never
+build:cuda-debug --copt -fsanitize=address
+build:cuda-debug --copt -DADDRESS_SANITIZER
+build:cuda-debug --copt -O1
+build:cuda-debug --copt -g
+build:cuda-debug --copt -fno-omit-frame-pointer
+build:cuda-debug --linkopt -fsanitize=address

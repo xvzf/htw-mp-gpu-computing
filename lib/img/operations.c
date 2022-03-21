@@ -124,7 +124,6 @@ uint8_t* read_pixel_line(ppm_image *img)
 
     gray_line = color_to_gray_line(pixel_line, img->depth, img->size_x);
     free(pixel_line);
-
     return gray_line;
 }
 

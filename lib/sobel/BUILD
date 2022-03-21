@@ -21,7 +21,7 @@ cuda_library(
     srcs = ["sobel_cuda.cu"],
     hdrs = [
         "sobel.h",
-        "sobel_cuda.cuh",
+        "sobel_cuda.cuh"
     ],
     visibility = ["//main:__pkg__"],
     deps = [ "//lib/img" ],

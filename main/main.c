@@ -8,10 +8,13 @@
 #include "lib/img/types.h"
 #include "lib/img/operations.h"
 #include "lib/sobel/sobel.h"
+uint8_t constant_maps_host[MAP_SIZE] = {0};
 
 // main entrypoint
 int main(int argc, char **argv)
 {
+
+    double first_start_time = omp_get_wtime();
     int ret = 0;
 
     // Input output
@@ -46,6 +49,8 @@ int main(int argc, char **argv)
         free(in_img);
         return -1;
     }
+    init_host_maps();
+    //print_host_maps();
 
     uint8_t *pixel_line;
     // load first three lines 
@@ -93,13 +98,14 @@ int main(int argc, char **argv)
     ret += save_image(out_img);
 
     // Free up resources
-    free(in_img->data);
+    /*free(in_img->data);
     free(out_img->data);
     fclose(out_img->fp);
     fclose(in_img->fp);
     free(in_img->filename);
     free(out_img->filename);
     free(in_img);
-    free(out_img);
+    free(out_img);*/
+    printf("Complete took %lfms\n", (omp_get_wtime() - first_start_time) * 1000);
     return ret;
 }
