@@ -32,53 +32,12 @@ static void print_host_maps(){
 extern "C"
 {
 #endif
-    // sobel runs the sobel operator.
-    uint8_t *sobel(ppm_image *in_img, ppm_image *out_img, intmax_t offset, uint8_t **return_device_out);
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 // sobel runs the sobel operator.
-int write_to_out_img(ppm_image *out_img, intmax_t offset, uint8_t *_device_out);
+void sobel(ppm_image *in_img, ppm_image *out_img, intmax_t offset, int last_call);
 #ifdef __cplusplus
 }
 #endif
 
-// Mat G_x (3x3)
-static const double sobel_g_x_mat[] = {
-    //  [1 0 -1]
-    1,
-    0,
-    -1,
-    //  [2 0 -2]
-    2,
-    0,
-    -2,
-    //  [1 0 -1]
-    1,
-    0,
-    -1,
-};
-
-// Mat G_y (3x3)
-static const double sobel_g_y_mat[] = {
-    //  [1 2 1]
-    1,
-    2,
-    1,
-    //  [0 0 0]
-    0,
-    0,
-    0,
-    //  [-1 -2 -1]
-    -1,
-    -2,
-    -1,
-};
 typedef float calc_t;
 
 #ifdef __CUDACC__
@@ -137,13 +96,8 @@ sobel_combined_op_data(uint8_t *data, uintmax_t x, uintmax_t y, uintmax_t size_x
 __device__
 #endif
 static inline uint8_t
-sobel_combined_op_data_three_rows(uint8_t *data_first_row, uint8_t *data_second_row, uint8_t *data_third_row, uintmax_t x, uintmax_t y, uintmax_t size_x, uintmax_t size_y)
+sobel_combined_op_data_three_rows(uint8_t *data_first_row, uint8_t *data_second_row, uint8_t *data_third_row, uintmax_t x)
 {
-
-    /*uintmax_t tmp_top_row = y * size_x;
-    uintmax_t tmp_middle_row = (y + 1) * size_x;
-    uintmax_t tmp_bottom_row = (y + 2) * size_x;*/
-
     calc_t top_left = data_first_row[x];
     //calc_t top = data[tmp_top_row + (x + 1)];
     calc_t top_right = data_first_row[ (x + 2)];

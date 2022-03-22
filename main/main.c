@@ -15,7 +15,6 @@ int main(int argc, char **argv)
 {
 
     double first_start_time = omp_get_wtime();
-    int ret = 0;
 
     // Input output
     char *in_path, *out_path;
@@ -50,7 +49,6 @@ int main(int argc, char **argv)
         return -1;
     }
     init_host_maps();
-    //print_host_maps();
 
     uint8_t *pixel_line;
     // load first three lines 
@@ -63,66 +61,18 @@ int main(int argc, char **argv)
             return -1;
         }
         memcpy(in_img->data + i * in_img->size_x, pixel_line, in_img->size_x);
-        free(pixel_line);
     }
 
-    uint8_t **device_out_ptr = malloc(sizeof(uint8_t*));
-    *device_out_ptr = NULL;
     // Perform sobel operator on first line
     double start_time = omp_get_wtime();
-    uint8_t *_device_out = sobel(in_img, out_img, 0, device_out_ptr);
-   // ret =
-    if (ret != EXIT_SUCCESS)
-    {
-        fprintf(stderr, "[!] Sobel operator failed to run!");
-    }
-
-    if(_device_out != NULL){
-        printf("herpiderpi\n");
-        write_to_out_img(out_img, 0, _device_out);
-    }
     for(intmax_t i = 0; i < in_img->size_y - 3; i++)
     {
-
-        //pixel_line = read_pixel_line(in_img);
-        //if(pixel_line == NULL)
-        //{
-        //    fprintf(stderr, "'%s' couldn't be loaded", in_img->filename);
-        //    return -1;
-        //}
-        //memcpy(in_img->data + (i+3) * in_img->size_x, pixel_line, in_img->size_x);
-        //free(pixel_line);
-        // Perform sobel operator
-        //ret = sobel(in_img, out_img, i + 1, device_out_ptr);
-        _device_out = sobel(in_img, out_img, i+ 1, device_out_ptr);
-        if (ret != EXIT_SUCCESS)
-        {
-            fprintf(stderr, "[!] Sobel operator failed to run!");
-        }
-      //  printf("main: %p %p %p\n", _device_out, device_out, *device_out_ptr);
-      //  if(device_out != NULL){
-      //      printf("derp\n");
-      //      write_to_out_img(out_img, i + 1, device_out);
-      //  }else{
-      //      printf("device_out was null\n");
-      //      if(_device_out != NULL){
-      //          printf("derp\n");
-      //          write_to_out_img(out_img, i + 1, _device_out);
-      //      }else{
-      //          printf("_device_out was null\n");
-      //          if(*device_out_ptr != NULL){
-      //              printf("derp\n");
-      //              write_to_out_img(out_img, i + 1, *device_out_ptr);
-      //          }else{
-      //              printf("*device_out_ptr was null\n");
-      //          }
-      //      }
-      //  }
+        sobel(in_img, out_img, i + 1, i == (in_img->size_y - 4));
     }
 
     printf("Compute took %lfms\n", (omp_get_wtime() - start_time) * 1000);
     // Save image
-    ret += save_image(out_img);
+    save_image(out_img);
     printf("Saved img\n");
     // Free up resources
     free(in_img->data);
@@ -134,5 +84,4 @@ int main(int argc, char **argv)
     free(in_img);
     free(out_img);
     printf("Complete took %lfms\n", (omp_get_wtime() - first_start_time) * 1000);
-    return ret;
 }

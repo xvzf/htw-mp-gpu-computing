@@ -61,13 +61,12 @@ ppm_image *load_image(const char *filename, int depth)
     }
 
     img = (ppm_image *)malloc(sizeof(ppm_image));
-    img->depth = buf[1] == '5' ? 1: 3; // P5 -> Grayscale P6 -> RGB
     if (!img)
     {
         fprintf(stderr, "[!] Failed to alloc memory");
         return NULL;
     }
-
+    img->depth = buf[1] == '5' ? 1: 3; // P5 -> Grayscale P6 -> RGB
     img->filename = malloc(sizeof(char) * (strlen(filename) + 1));
     memcpy(img->filename, filename, sizeof(char) * (strlen(filename) + 1));
     img->fp = fp;
@@ -109,9 +108,6 @@ ppm_image *load_image(const char *filename, int depth)
 
     return img;
 }
-
-
-
 
 // save_image stores an image in the PPM P6 format
 // FIXME error handling!
