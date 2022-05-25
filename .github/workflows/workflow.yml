@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Install clang & omp libs
+      run: |
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh 13
+        sudo apt install -y libomp-13-dev
+
+
+    - name: Mount bazel cache
+      uses: actions/cache@v1
+      with:
+        path: "/home/runner/.cache/bazel"
+        key: bazel_cache
+
+    - name: Install bazelisk
+      run: |
+        curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/v1.11.0/bazelisk-linux-amd64"
+        mkdir -p "${GITHUB_WORKSPACE}/bin/"
+        mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
+        chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
+
+    # - name: Test
+    #   env:
+    #     CC: clang-13
+    #     CXX: clang++-13
+    #   run: |
+    #     "${GITHUB_WORKSPACE}/bin/bazel" test //...
+
+    - name: Build
+      env:
+        CC: clang-13
+        CXX: clang++-13
+      run: |
+        "${GITHUB_WORKSPACE}/bin/bazel" build //...
